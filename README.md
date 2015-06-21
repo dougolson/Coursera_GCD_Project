@@ -12,7 +12,7 @@ library(plyr)
 library(dplyr)
 library(data.table)
 ```
-### Get the two raw data sets and get info about them:
+### Read in the two raw data sets and get info about them:
 * train dimensions: [1] 7352  561
 * test dimensions: [1] 2947  561
 ```{r}
@@ -21,7 +21,7 @@ dim(X_train)
 X_test <- read.table("./UCI HAR Dataset/test/X_test.txt", quote="\"")
 dim(X_test)
 ```
-### Get the activity data
+### Read in the activity data
 * train dimensions: [1] 7352    1
 * test dimensions: [1] 2947    1
 ```{r}
@@ -32,7 +32,7 @@ y_test <- read.table("./UCI HAR Dataset/test/y_test.txt", quote="\"")
 # y_test = activity labels (1-6)
 dim(y_test)
 ```
-### Get the subject IDs
+### Read in the subject IDs
 * train dimensions: [1] 7352    1
 * test dimensions: [1] 2947    1
 ```{r}
@@ -59,12 +59,12 @@ activityTrain <- revalue(activityTrain,c("1" = "WALKING","2" = "WALKING_UPSTAIRS
 activityTest <- factor(unlist(y_test[1]))
 activityTest <- revalue(activityTest,c("1" = "WALKING","2" = "WALKING_UPSTAIRS", "3"="WALLKING_DOWNSTAIRS", "4"= "SITTING", "5" = "STANDING", "6" = "LAYING"))
 ```
-### combine subjectTrain + activityTrain and subjectTest + activityTest
+### Combine subjectTrain + activityTrain and subjectTest + activityTest
 ```{r}
 trainID <- data.frame("subject" = subjectTrain,"activity" = activityTrain,row.names = NULL)
 testID <- data.frame("subject" = subjectTest,"activity" = activityTest, row.names = NULL)
 ```
-### cbind trainID + X_train and testID + X_test
+### Cbind trainID + X_train and testID + X_test
 ```{r}
 trainData <- cbind(trainID, X_train)
 testData <- cbind(testID, X_test)
@@ -73,14 +73,15 @@ testData <- cbind(testID, X_test)
 ```{r}
 allData <- merge(trainData,testData,row.names=NULL,all = TRUE )
 ```
-### Get the features
+### Read in the features
 * features are the 561 column names
-
+* dim: 561 x 1
 ```{r}
 features <- read.table("./UCI HAR Dataset/features.txt", quote="\"")
 dim(features)
 ```
 ### transform the features data into row form
+* dim: 1 x 561
 ```{r}
 nms <- t(features[2])
 dim(nms)
@@ -107,7 +108,7 @@ allDataMeanStd <- arrange(allDataMeanStd,subject)
 allDT <- data.table(allDataMeanStd)
 summaryData <- allDT[, lapply(.SD, mean), by=c("subject","activity"), .SDcols=3:86]
 ```
-### Write the ourput file
+### Write the output file
 ```{r}
 write.table(summaryData,file = "summaryData.txt",sep = " ", row.names = FALSE)
 ```
