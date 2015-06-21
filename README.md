@@ -90,7 +90,8 @@ dim(nms)
 ```{r}
 names(allData)[3:563] <- nms
 ```
-### use grep to create a selector for subject, activity and all mean and std columns: 
+### use grep to create a selector for subject, activity and all mean and std columns:
+* this returns indeces for column names that contain "subject", "activity", "mean" or "std"
 ```{r}
 allDataNames <- names(allData)
 colSelect <- grep("subject|activity|mean|std",allDataNames,ignore.case = TRUE)
@@ -104,6 +105,7 @@ allDataMeanStd <- allData[,colSelect]
 allDataMeanStd <- arrange(allDataMeanStd,subject)
 ```
 ### convert to data.table and summarize
+* this basically subsets the data by subject and activity and applies the mean to each subset in each column.
 ```{r}
 allDT <- data.table(allDataMeanStd)
 summaryData <- allDT[, lapply(.SD, mean), by=c("subject","activity"), .SDcols=3:86]
